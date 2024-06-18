@@ -40,92 +40,92 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/designer',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'designer',
+      component: () => import('@/views/designer/index'),
       meta: { title: '设计师服务', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/foreman',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'foreman',
+      component: () => import('@/views/foreman/index'),
       meta: { title: '工长服务', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/hardwareKnowledgePackage',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'hardwareKnowledgePackage',
+      component: () => import('@/views/hardwareKnowledgePackage/index'),
       meta: { title: '硬装知识包', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/constructionSites',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'constructionSites',
+      component: () => import('@/views/constructionSites/index'),
       meta: { title: '工地一览', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/partner',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'partner',
+      component: () => import('@/views/partner/index'),
       meta: { title: '合作伙伴', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/whitelist',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'whitelist',
+      component: () => import('@/views/whitelist/index'),
       meta: { title: '合作白名单', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/wholeHouseCustomizationPlanCase',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'wholeHouseCustomizationPlanCase',
+      component: () => import('@/views/wholeHouseCustomizationPlanCase/index'),
       meta: { title: '全屋定制', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/user',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'user',
+      component: () => import('@/views/user/index'),
       meta: { title: '用户管理', icon: 'dashboard' }
     }]
   },
   {
-    path: '/constructionKnowledge',
+    path: '/customer',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'constructionKnowledge',
-      component: () => import('@/views/constructionKnowledge/index'),
+      name: 'customer',
+      component: () => import('@/views/customer/index'),
       meta: { title: '客服管理', icon: 'dashboard' }
     }]
   },
