@@ -368,7 +368,7 @@ export function addForemanInformation(data) {
     })
 }
 // 删除
-export function deleteForemanInformation(params) {
+export function foremandeleteForemanInformation(params) {
     return request({
         url: '/foremanInformation/deleteForemanInformation',
         method: 'delete',
@@ -568,3 +568,34 @@ export function ConstructionKnowledgequeryList(params) {
         params
     })
 }
+export function addUser(data) {
+    return request({
+        url: '/user/addUser',
+        method: 'post',
+        data
+    })
+}
+// // 删除
+// export function deleteAdvertisementByIds(data) {
+//     return request({
+//         url: '/advertisement/deleteAdvertisementByIds',
+//         method: 'post',
+//         data
+//     })
+// }
+// 查询
+export function queryUserList(data) {
+    return request({
+        url: '/user/queryUserList',
+        method: 'post',
+        data
+    })
+}
+// // 修改
+// export function updateAdvertisement(data) {
+//     return request({
+//         url: '/advertisement/updateAdvertisement',
+//         method: 'post',
+//         data
+//     })
+// }

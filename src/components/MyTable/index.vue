@@ -22,7 +22,7 @@
     </el-table>
     <el-pagination
       v-if="showPagination"
-      :current-page="currentPage"
+      :current-page="pageNum"
       :page-sizes="[10, 20, 30, 50]"
       :page-size="pageSize"
       :total="total"
@@ -36,31 +36,38 @@
       title="编辑/新增数据"
       @close="handleClose"
     >
-      <el-form :model="formData" label-width="80px">
+      <el-form :model="formData" label-width="120px">
         <!-- 表单项 -->
         <!-- 示例： -->
         <!-- <el-form-item label="字段名">
           <el-input v-model="formData.fieldName"></el-input>
         </el-form-item> -->
         <template v-for="(item, index) in formItems">
-          <el-form-item :key="index" :label="item.label" :prop="item.prop">
-            <component
-              :is="item.type"
-              v-model="formData[item.prop]"
-              :id="`form-item-${index}`"
-              v-bind="item.attrs"
-            >
-            <template v-if="item.type === 'el-select'">
-                <el-option
-                  v-for="option in item.attrs.options"
-                  :key="option.value"
-                  :label="option.label"
-                  :value="option.value">
-                </el-option>
-              </template>
-            </component>
-          </el-form-item>
+      <el-form-item :key="index" :label="item.label" :prop="item.prop">
+        <template v-if="item.type === 'el-input'">
+          <el-input v-model="formData[item.prop]" :id="`form-item-${index}`" v-bind="item.attrs"></el-input>
         </template>
+        <template v-else-if="item.type === 'el-select'">
+          <el-select v-model="formData[item.prop]" :id="`form-item-${index}`" v-bind="item.attrs">
+            <el-option
+              v-for="option in item.attrs.options"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            ></el-option>
+          </el-select>
+        </template>
+        <template v-else-if="item.type === 'el-radio-group'">
+          <el-radio-group v-model="formData[item.prop]" :id="`form-item-${index}`">
+            <el-radio
+              v-for="option in item.attrs.options"
+              :key="option.value"
+              :label="option.value"
+            >{{ option.label }}</el-radio>
+          </el-radio-group>
+        </template>
+      </el-form-item>
+    </template>
       </el-form>
       <div slot="footer">
         <el-button @click="editDialogVisible = false">取消</el-button>
@@ -72,7 +79,7 @@
 
 <script>
 export default {
-  name: "BaseTable",
+  name: "MyTable",
   props: {
     tableData: {
       type: Array,
@@ -102,7 +109,7 @@ export default {
       type: Number,
       required: true,
     },
-    currentPage: {
+    pageNum: {
       type: Number,
       required: true,
     },
