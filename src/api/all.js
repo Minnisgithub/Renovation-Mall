@@ -591,11 +591,11 @@ export function queryUserList(data) {
         data
     })
 }
-// // 修改
-// export function updateAdvertisement(data) {
-//     return request({
-//         url: '/advertisement/updateAdvertisement',
-//         method: 'post',
-//         data
-//     })
-// }
+// 修改
+export function updateUser(data) {
+    return request({
+        url: '/user/updateUser',
+        method: 'post',
+        data
+    })
+}

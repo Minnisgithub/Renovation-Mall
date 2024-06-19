@@ -1,38 +1,43 @@
 <template>
-  <div class="app-container">
-    <!-- 查询条件及重置按钮 -->
-    <el-form :model="queryCriteria" inline>
-      <el-form-item label="姓名">
-        <el-input v-model="queryCriteria.userName"></el-input>
-      </el-form-item>
-      <el-form-item label="手机号">
-        <el-input v-model="queryCriteria.mobile"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleQuery">查询</el-button>
-        <el-button @click="handleReset">重置</el-button>
-      </el-form-item>
-    </el-form>
-    <MyTable
-      :table-data="tableData"
-      :formItems="formItems"
-      :columns="tableColumns"
-      :loading="isLoading"
-      :show-pagination="true"
-      :total="total"
-      :pageSize="pageSize"
-      :pageNum="pageNum"
-      @delete="handleDelete"
-      @save="handleSave"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+  <div>
+    <div class="app-container">
+      <el-form :model="queryCriteria" inline>
+        <el-form-item label="姓名">
+          <el-input v-model="queryCriteria.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="queryCriteria.mobile"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="app-container">
+      <!-- 查询条件及重置按钮 -->
+      <MyTable
+        :table-data="tableData"
+        :formItems="formItems"
+        :columns="tableColumns"
+        :loading="isLoading"
+        :show-pagination="true"
+        :total="total"
+        :pageSize="pageSize"
+        :pageNum="pageNum"
+        :deleteShow="false"
+        @delete="handleDelete"
+        @save="handleSave"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
-import { addUser, queryUserList } from "@/api/all";
+import { addUser, queryUserList, updateUser } from "@/api/all";
 export default {
   components: {
     MyTable,
@@ -146,6 +151,10 @@ export default {
       }).then((res) => {
         console.log(res);
         this.tableData = res.data.list;
+        // .map(item =>{
+        //   item.password = ''
+        //   return item
+        // });
         this.pageSize = res.data.pageSize;
         this.pageNum = res.data.pageNum;
         this.total = res.data.total;
@@ -158,6 +167,12 @@ export default {
     },
     handleSave(formData) {
       if (formData.userId) {
+        updateUser(formData).then((res) => {
+          if (res.status == 0) {
+            this.$message.success("修改成功");
+            this.handleQuery();
+          }
+        });
       } else {
         addUser(formData).then((res) => {
           if (res.status == 0) {
@@ -165,7 +180,6 @@ export default {
             this.handleQuery();
           }
         });
-        this.tableData.push(formData);
       }
     },
     handleSizeChange(newSize) {
