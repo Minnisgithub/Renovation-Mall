@@ -442,7 +442,7 @@ export function deleteAdvertisementByIds(data) {
 // 查询
 export function getAdvertisementList(params) {
     return request({
-        url: '/advertisement/getAdvertisementList',
+        url: '/advertisement/List',
         method: 'get',
         params
     })
@@ -576,13 +576,13 @@ export function addUser(data) {
     })
 }
 // // 删除
-// export function deleteAdvertisementByIds(data) {
-//     return request({
-//         url: '/advertisement/deleteAdvertisementByIds',
-//         method: 'post',
-//         data
-//     })
-// }
+export function deleteUserById(params) {
+    return request({
+        url: '/user/deleteUserById',
+        method: 'delete',
+        params
+    })
+}
 // 查询
 export function queryUserList(data) {
     return request({

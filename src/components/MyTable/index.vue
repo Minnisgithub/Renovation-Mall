@@ -4,7 +4,14 @@
     <div class="addBtn">
       <el-button type="primary" @click="handleAdd">新增</el-button>
     </div>
-    <el-table :data="tableData" v-loading="loading">
+    <el-table
+      :data="tableData"
+      v-loading="loading"
+      style="max-height: 600px; overflow-y: auto"
+      :header-fixed="true"
+      height="500"
+      
+    >
       <el-table-column
         v-for="column in columns"
         :key="column.prop"
@@ -12,16 +19,22 @@
         :prop="column.prop"
         :formatter="column.formatter"
       >
+        <template v-if="column.prop === 'url'" v-slot="{ row }">
+          <slot name="imageColumn" :row="row"></slot>
+        </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button
-            v-show="deleteShow"
-            type="text"
-            @click="handleDelete(scope.row)"
-            >删除</el-button
-          >
+           <el-divider direction="vertical"></el-divider>
+           <el-popconfirm
+              title="确定删除？"
+              @onConfirm="handleDelete(scope.row)"
+            >
+              <el-button slot="reference" type="text" size="small"
+                >删除</el-button
+              >
+            </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -31,7 +44,7 @@
       :page-sizes="[10, 20, 30, 50]"
       :page-size="pageSize"
       :total="total"
-      layout="sizes, prev, pager, next, jumper"
+      layout="total, sizes, prev, pager, next, jumper"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       align="right"
@@ -92,15 +105,26 @@
             <template v-else-if="item.type === 'el-upload'">
               <el-upload
                 class="upload-demo"
-                :action="env=== 'development'?'/baseapi/file/upload':'/file/upload'"
+                :action="
+                  env === 'development'
+                    ? '/baseapi/file/upload'
+                    : '/file/upload'
+                "
                 :show-file-list="false"
                 :on-success="handleUploadSuccess"
+                :headers="headers"
               >
                 <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">
+                <!-- <div slot="tip" class="el-upload__tip">
                   只能上传jpg/png文件，且不超过500kb
-                </div>
+                </div> -->
               </el-upload>
+              <el-image
+                v-if="formData.url"
+                style=" height: 200px"
+                :src="formData.url"
+                fit="cover"
+              ></el-image>
             </template>
           </el-form-item>
         </template>
@@ -114,6 +138,9 @@
 </template>
 
 <script>
+import { getToken } from "@/utils/auth";
+var token = getToken();
+
 export default {
   name: "MyTable",
   props: {
@@ -149,10 +176,6 @@ export default {
       type: Number,
       required: true,
     },
-    deleteShow: {
-      type: Boolean,
-      default: true,
-    },
   },
   computed: {
     env() {
@@ -163,6 +186,7 @@ export default {
     return {
       editDialogVisible: false,
       formData: {}, // Store form data for editing
+      headers: { token: token },
     };
   },
   methods: {
@@ -194,8 +218,7 @@ export default {
       this.formData = {};
     },
     handleUploadSuccess(response, file, fileList) {
-      // 处理上传成功的逻辑，更新 formData 中的相关字段
-      this.formData.imageUrl = response.url; // 假设后端返回一个url字段表示上传成功后的图片地址
+      this.$set(this.formData, "url", response.data);
     },
     shouldShowFormItem(item) {
       if (item.prop === "password" && this.formData.adminType === 0) {

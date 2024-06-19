@@ -25,7 +25,6 @@
         :total="total"
         :pageSize="pageSize"
         :pageNum="pageNum"
-        :deleteShow="false"
         @delete="handleDelete"
         @save="handleSave"
         @size-change="handleSizeChange"
@@ -37,7 +36,7 @@
 
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
-import { addUser, queryUserList, updateUser } from "@/api/all";
+import { addUser, queryUserList, updateUser,deleteUserById } from "@/api/all";
 export default {
   components: {
     MyTable,
@@ -87,10 +86,6 @@ export default {
   },
   created() {
     this.handleQuery();
-    this.tableData = [
-      { userName: "网格", mobile: 12, id: 12 },
-      { name: "网格123", age: 13, id: 12 },
-    ];
     this.formItems = [
       // 动态表单项配置
       { label: "用户名", prop: "userName", type: "el-input", attrs: {} },
@@ -163,7 +158,14 @@ export default {
     },
     handleDelete(row) {
       // Handle delete logic here
-      console.log("Delete row:", row);
+      deleteUserById({id:row.userId})
+        .then((res) => {
+          if (res.status === 0) {
+            // 删除成功后的处理
+            this.$message.success("删除成功");
+            this.handleQuery(); // 重新查询数据，更新表格等操作
+          }
+        })
     },
     handleSave(formData) {
       if (formData.userId) {

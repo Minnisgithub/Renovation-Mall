@@ -2,11 +2,8 @@
   <div>
     <div class="app-container">
       <el-form :model="queryCriteria" inline>
-        <el-form-item label="姓名">
-          <el-input v-model="queryCriteria.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="queryCriteria.mobile"></el-input>
+        <el-form-item label="名称">
+          <el-input v-model="queryCriteria.name"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">查询</el-button>
@@ -25,19 +22,27 @@
         :total="total"
         :pageSize="pageSize"
         :pageNum="pageNum"
-        :deleteShow="false"
         @delete="handleDelete"
         @save="handleSave"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-      />
+      >
+        <template v-slot:imageColumn="{ row }">
+          <span v-html="imageUrlFormatter(row, 'url')"></span>
+        </template>
+      </MyTable>
     </div>
   </div>
 </template>
 
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
-import { addUser, queryUserList, updateUser } from "@/api/all";
+import {
+  getAdvertisementList,
+  addAdvertisement,
+  updateAdvertisement,
+  deleteAdvertisementByIds,
+} from "@/api/all";
 export default {
   components: {
     MyTable,
@@ -47,115 +52,54 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          prop: "userName", // 列对应的数据字段
-          label: "用户名", // 列的标题
+          prop: "orderNum", // 列对应的数据字段
+          label: "排序", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "mobile", // 列对应的数据字段
-          label: "手机号", // 列的标题
+          prop: "name", // 列对应的数据字段
+          label: "广告名称", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "gender",
-          label: "性别",
+          prop: "url",
+          label: "链接",
+          width: "200",
+          // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
+        },
+        {
+          prop: "createTime",
+          label: "创建时间",
           width: "100",
-          formatter: this.genderFormatter, // 使用格式化函数
-        },
-        {
-          prop: "adminType",
-          label: "是否管理人员",
-          width: "200",
-          formatter: this.adminTypeFormatter, // 使用格式化函数
-        },
-        {
-          prop: "userStatus",
-          label: "是否禁用",
-          width: "200",
-          formatter: this.userStatusFormatter, // 使用格式化函数
         },
       ],
       isLoading: false,
-      total: 100,
+      total: 10,
       formItems: [],
       pageSize: 10,
       pageNum: 1,
-      queryCriteria: { userName: "", mobile: "" }, // 查询条件
+      queryCriteria: { name: "" }, // 查询条件
     };
   },
   created() {
     this.handleQuery();
-    this.tableData = [
-      { userName: "网格", mobile: 12, id: 12 },
-      { name: "网格123", age: 13, id: 12 },
-    ];
     this.formItems = [
       // 动态表单项配置
-      { label: "用户名", prop: "userName", type: "el-input", attrs: {} },
-      { label: "手机号", prop: "mobile", type: "el-input", attrs: {} },
-      {
-        label: "性别",
-        prop: "gender",
-        type: "el-radio-group",
-        attrs: {
-          options: [
-            { value: 1, label: "男" },
-            { value: 2, label: "女" },
-          ],
-        },
-      },
-      {
-        label: "是否管理人员",
-        prop: "adminType",
-        type: "el-radio-group",
-        attrs: {
-          options: [
-            { value: 1, label: "是" },
-            { value: 0, label: "否" },
-          ],
-        },
-      },
-      { label: "密码", prop: "password", type: "el-input", attrs: {} },
-      {
-        label: "是否禁用",
-        prop: "userStatus",
-        type: "el-radio-group",
-        attrs: {
-          options: [
-            { value: 1, label: "可用" },
-            { value: 0, label: "禁用" },
-          ],
-        },
-      },
-       { label: "图片", prop: "imageUrl", type: "el-upload", attrs: {} },
-      // {
-      //   label: "年龄",
-      //   prop: "age",
-      //   type: "el-select",
-      //   attrs: {
-      //     options: [
-      //       { value: 12, label: "12岁" },
-      //       { value: 13, label: "13岁" },
-      //     ],
-      //   },
-      // },
+      { label: "广告名称", prop: "name", type: "el-input", attrs: {} },
+      { label: "排序", prop: "orderNum", type: "el-input", attrs: {} },
+      { label: "图片", prop: "url", type: "el-upload", attrs: {} },
     ];
   },
   methods: {
     handleQuery() {
-      queryUserList({
+      getAdvertisementList({
         ...this.queryCriteria,
-        pageSize: this.pageSize,
-        pageNum: this.pageNum,
+        size: this.pageSize,
+        page: this.pageNum,
       }).then((res) => {
-        console.log(res);
         this.tableData = res.data.list;
-        // .map(item =>{
-        //   item.password = ''
-        //   return item
-        // });
         this.pageSize = res.data.pageSize;
         this.pageNum = res.data.pageNum;
         this.total = res.data.total;
@@ -164,18 +108,28 @@ export default {
     },
     handleDelete(row) {
       // Handle delete logic here
-      console.log("Delete row:", row);
+      deleteAdvertisementByIds([row.id])
+        .then((res) => {
+          if (res.status === 0) {
+            // 删除成功后的处理
+            this.$message.success("删除成功");
+            this.handleQuery(); // 重新查询数据，更新表格等操作
+          } else {
+            // 删除失败时的处理
+            this.$message.error("删除失败，请重试");
+          }
+        })
     },
     handleSave(formData) {
-      if (formData.userId) {
-        updateUser(formData).then((res) => {
+      if (formData.id) {
+        updateAdvertisement(formData).then((res) => {
           if (res.status == 0) {
             this.$message.success("修改成功");
             this.handleQuery();
           }
         });
       } else {
-        addUser(formData).then((res) => {
+        addAdvertisement(formData).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();
@@ -193,17 +147,15 @@ export default {
     },
 
     handleReset() {
-      this.queryCriteria = { userName: "", mobile: "" };
+      this.queryCriteria = { name: "" };
       this.handleQuery();
     },
-    genderFormatter(row, column, value) {
-      return value === 1 ? "男" : "女";
-    },
-    adminTypeFormatter(row, column, value) {
-      return value === 1 ? "是" : "否";
-    },
-    userStatusFormatter(row, column, value) {
-      return value === 1 ? "可用" : "禁用";
+    imageUrlFormatter(row, property) {
+      if (row[property]) {
+        return `<img src="${row[property]}" style="max-height:60px;" />`;
+      } else {
+        return "无图片";
+      }
     },
   },
 };
