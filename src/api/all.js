@@ -568,6 +568,13 @@ export function ConstructionKnowledgequeryList(params) {
         params
     })
 }
+// 查询施工类型
+export function getConstructionTypeList() {
+    return request({
+        url: '/constructionType/getConstructionTypeList',
+        method: 'get',
+    })
+}
 export function addUser(data) {
     return request({
         url: '/user/addUser',
