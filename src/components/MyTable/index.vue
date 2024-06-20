@@ -166,15 +166,12 @@ export default {
     },
     total: {
       type: Number,
-      required: true,
     },
     pageSize: {
       type: Number,
-      required: true,
     },
     pageNum: {
       type: Number,
-      required: true,
     },
   },
   computed: {

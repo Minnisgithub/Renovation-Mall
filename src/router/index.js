@@ -50,15 +50,45 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/foreman',
+    path: '/example/foreman',
     component: Layout,
+    redirect: '/example/foreman',
+    meta: { title: '工长服务', icon: 'el-icon-s-help' },
     children: [{
-      path: 'index',
+      path: 'foreman',
       name: 'foreman',
       component: () => import('@/views/foreman/index'),
-      meta: { title: '工长服务', icon: 'dashboard' }
-    }]
+      meta: { title: '工长模式', icon: 'table' }
+    },
+    {
+      path: 'foremanwh',
+      name: 'foremanwh',
+      component: () => import('@/views/foremanwh/index'),
+      meta: { title: '工长维护', icon: 'table' }
+    }
+  ]
   },
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: 'Example', icon: 'el-icon-s-help' },
+  //   children: [
+  //     {
+  //       path: 'table',
+  //       name: 'Table',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: 'Table', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'Tree', icon: 'tree' }
+  //     }
+  //   ]
+  // },
   {
     path: '/hardwareKnowledgePackage',
     component: Layout,

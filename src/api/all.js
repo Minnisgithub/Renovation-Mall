@@ -400,7 +400,7 @@ export function addMarketRate(data) {
     })
 }
 // 删除
-export function deleteForemanInformation(data) {
+export function deleteMarketRateByIds(data) {
     return request({
         url: '/MarketRate/deleteMarketRateByIds',
         method: 'post',
@@ -556,6 +556,38 @@ export function getConstructionStandardList(params) {
 export function updateConstructionStandard(data) {
     return request({
         url: '/constructionStandard/updateConstructionStandard',
+        method: 'post',
+        data
+    })
+}
+// 验收标准API
+export function addCheckAcceptStandard(data) {
+    return request({
+        url: '/CheckAcceptStandard/addCheckAcceptStandard',
+        method: 'post',
+        data
+    })
+}
+// 删除
+export function deleteCheckAcceptStandardByIds(data) {
+    return request({
+        url: '/CheckAcceptStandard/deleteCheckAcceptStandardByIds',
+        method: 'post',
+        data
+    })
+}
+// 查询
+export function getCheckAcceptStandardList(params) {
+    return request({
+        url: '/CheckAcceptStandard/getCheckAcceptStandardList',
+        method: 'get',
+        params
+    })
+}
+// 修改
+export function updateCheckAcceptStandard(data) {
+    return request({
+        url: '/CheckAcceptStandard/updateCheckAcceptStandard',
         method: 'post',
         data
     })
