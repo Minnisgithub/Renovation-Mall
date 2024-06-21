@@ -638,3 +638,35 @@ export function updateUser(data) {
         data
     })
 }
+// 添加硬装知识包
+export function addHardwareKnowledgePackage(data) {
+    return request({
+        url: '/hardwareKnowledgePackage/addHardwareKnowledgePackage',
+        method: 'post',
+        data
+    })
+}
+// // 删除
+export function deleteHardwareKnowledgePackage(params) {
+    return request({
+        url: '/hardwareKnowledgePackage/deleteHardwareKnowledgePackage',
+        method: 'delete',
+        params
+    })
+}
+// 查询
+export function hardwareKnowledgePackagequeryList(params) {
+    return request({
+        url: '/hardwareKnowledgePackage/queryList',
+        method: 'get',
+        params
+    })
+}
+// 修改
+export function updateHardwareKnowledgePackage(data) {
+    return request({
+        url: '/hardwareKnowledgePackage/updateHardwareKnowledgePackage',
+        method: 'post',
+        data
+    })
+}
