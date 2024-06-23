@@ -39,7 +39,7 @@
         @current-change="handleCurrentChange"
       >
         <template v-slot:imageColumn="{ row }">
-          <span v-html="imageUrlFormatter(row, 'url')"></span>
+          <span v-html="imageUrlFormatter(row, 'imgUrl')"></span>
         </template>
       </MyTable>
     </div>
@@ -54,6 +54,7 @@ import {
   addForeman,
   updateForeman,
   deleteForeman,
+  queryUserList,
 } from "@/api/all";
 export default {
   components: {
@@ -81,7 +82,12 @@ export default {
           width: "100",
         },
         {
-          prop: "url",
+          prop: "userId",
+          label: "用户名",
+          width: "100",
+        },
+        {
+          prop: "imgUrl",
           label: "图片",
           width: "200",
           // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
@@ -97,32 +103,61 @@ export default {
     };
   },
   created() {
-    foremanInformationqueryList({
-      pageSize: 999,
-      page: 1,
-    }).then((res) => {
-      this.options = res.data.list.map((item) => ({
-        label: item.description,
-        value: item.id, // 假设你需要一个唯一的值作为选项的 value
-      }));
-      this.formItems = [
-        // 动态表单项配置
-        { label: "姓名", prop: "name", type: "el-input", attrs: {} },
-        { label: "工龄", prop: "seniority", type: "el-input", attrs: {} },
-        {
-          label: "工长模式",
-          prop: "areaId",
-          type: "el-select",
-          attrs: {
-            options: this.options,
-          },
-        },
-        { label: "图片", prop: "url", type: "el-upload", attrs: {} },
-      ];
-    });
+    this.initializeData();
     this.handleQuery();
   },
   methods: {
+    async initializeData() {
+      try {
+        this.loading = true;
+
+        // 并行执行两个异步请求
+        const [userListResponse, foremanInfoResponse] = await Promise.all([
+          queryUserList({ pageSize: 999, pageNum: 1 }),
+          foremanInformationqueryList({ pageSize: 999, page: 1 }),
+        ]);
+
+        // 处理第一个请求的结果
+        this.options1 = userListResponse.data.list.map((item) => ({
+          label: item.userName,
+          value: item.userId, // 假设你需要一个唯一的值作为选项的 value
+        }));
+
+        // 处理第二个请求的结果
+        this.options = foremanInfoResponse.data.list.map((item) => ({
+          label: item.description,
+          value: item.id, // 假设你需要一个唯一的值作为选项的 value
+        }));
+
+        // 配置动态表单项
+        this.formItems = [
+          { label: "姓名", prop: "name", type: "el-input", attrs: {} },
+          { label: "工龄", prop: "seniority", type: "el-input", attrs: {} },
+          {
+            label: "工长模式",
+            prop: "areaId",
+            type: "el-select",
+            attrs: {
+              options: this.options,
+            },
+          },
+          {
+            label: "用户",
+            prop: "userId",
+            type: "el-select",
+            attrs: {
+              options: this.options1,
+            },
+          },
+          { label: "图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+        ];
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // 这里可以添加错误提示逻辑，例如展示通知或消息框
+      } finally {
+        this.loading = false;
+      }
+    },
     handleQuery() {
       foremanqueryList({
         ...this.queryCriteria,
@@ -159,10 +194,7 @@ export default {
         });
       } else {
         // addForeman(formData).then((res) => {
-        addForeman({
-          ...formData,
-          imgUrl:"https://123.249.72.173:8888/upload/20240621/1705371716392.jpg_83214da7-90fa-4f4f-a674-8263beba2ae4.jpg",
-        }).then((res) => {
+        addForeman( ).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();

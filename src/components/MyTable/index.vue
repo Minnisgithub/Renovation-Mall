@@ -10,7 +10,6 @@
       style="max-height: 600px; overflow-y: auto"
       :header-fixed="true"
       height="500"
-      
     >
       <el-table-column
         v-for="column in columns"
@@ -19,22 +18,22 @@
         :prop="column.prop"
         :formatter="column.formatter"
       >
-        <template v-if="column.prop === 'url'" v-slot="{ row }">
+        <template v-if="column.prop === 'url' || column.prop === 'imgUrl'" v-slot="{ row }">
           <slot name="imageColumn" :row="row"></slot>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-           <el-divider direction="vertical"></el-divider>
-           <el-popconfirm
-              title="确定删除？"
-              @onConfirm="handleDelete(scope.row)"
+          <el-divider direction="vertical"></el-divider>
+          <el-popconfirm
+            title="确定删除？"
+            @onConfirm="handleDelete(scope.row)"
+          >
+            <el-button slot="reference" type="text" size="small"
+              >删除</el-button
             >
-              <el-button slot="reference" type="text" size="small"
-                >删除</el-button
-              >
-            </el-popconfirm>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -111,18 +110,17 @@
                     : '/file/upload'
                 "
                 :show-file-list="false"
-                :on-success="handleUploadSuccess"
+                :on-success="
+                  (response) => handleUploadSuccess(response, item.prop)
+                "
                 :headers="headers"
               >
                 <el-button size="small" type="primary">点击上传</el-button>
-                <!-- <div slot="tip" class="el-upload__tip">
-                  只能上传jpg/png文件，且不超过500kb
-                </div> -->
               </el-upload>
               <el-image
-                v-if="formData.url"
-                style=" height: 200px"
-                :src="formData.url"
+                v-if="formData[item.prop]"
+                style="height: 200px"
+                :src="formData[item.prop]"
                 fit="cover"
               ></el-image>
             </template>
@@ -214,9 +212,10 @@ export default {
       // 清空表单数据或者初始化表单数据
       this.formData = {};
     },
-    handleUploadSuccess(response, file, fileList) {
-      this.$set(this.formData, "url", response.data);
+    handleUploadSuccess(response, itemProp) {
+      this.$set(this.formData, itemProp, response.data);
     },
+
     shouldShowFormItem(item) {
       if (item.prop === "password" && this.formData.adminType === 0) {
         return false;

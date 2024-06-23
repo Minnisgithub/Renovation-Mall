@@ -77,7 +77,7 @@ export default {
         },
         {
           prop: "url",
-          label: "链接",
+          label: "二维码",
           width: "200",
           // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
         },
@@ -103,7 +103,7 @@ export default {
       { label: "服务范围", prop: "serviceArea", type: "el-input", attrs: {} },
       { label: "服务时间", prop: "serviceTime", type: "el-input", attrs: {} },
       { label: "排序", prop: "orderNum", type: "el-input", attrs: {} },
-      { label: "图片", prop: "url", type: "el-upload", attrs: {} },
+      { label: "二维码", prop: "url", type: "el-upload", attrs: {} },
     ];
   },
   methods: {
