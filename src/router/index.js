@@ -50,7 +50,7 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/example/foreman',
+    path: '/example',
     component: Layout,
     redirect: '/example/foreman',
     meta: { title: '工长服务', icon: 'el-icon-s-help' },
@@ -109,25 +109,65 @@ export const constantRoutes = [
       meta: { title: '工地一览', icon: 'dashboard' }
     }]
   },
+  // {
+  //   path: '/partner',
+  //   component: Layout,
+  //   children: [{
+  //     path: 'index',
+  //     name: 'partner',
+  //     component: () => import('@/views/partner/index'),
+  //     meta: { title: '合作伙伴', icon: 'dashboard' }
+  //   }]
+  // },
   {
     path: '/partner',
     component: Layout,
+    redirect: '/partner/supervisor',
+    meta: { title: '合作伙伴', icon: 'el-icon-s-help' },
     children: [{
-      path: 'index',
-      name: 'partner',
-      component: () => import('@/views/partner/index'),
-      meta: { title: '合作伙伴', icon: 'dashboard' }
-    }]
+      path: 'supervisor',
+      name: 'supervisor',
+      component: () => import('@/views/supervisor/index'),
+      meta: { title: '三方监理', icon: 'table' }
+    },
+    {
+      path: 'cleaning',
+      name: 'cleaning',
+      component: () => import('@/views/cleaning/index'),
+      meta: { title: '开荒保洁', icon: 'table' }
+    },
+    {
+      path: 'intelligence',
+      name: 'intelligence',
+      component: () => import('@/views/intelligence/index'),
+      meta: { title: '房屋智能服务', icon: 'table' }
+    }
+  ]
   },
   {
     path: '/whitelist',
     component: Layout,
+    redirect: '/whitelist/supervisor',
+    meta: { title: '合作白名单', icon: 'el-icon-s-help' },
     children: [{
-      path: 'index',
-      name: 'whitelist',
-      component: () => import('@/views/whitelist/index'),
-      meta: { title: '合作白名单', icon: 'dashboard' }
-    }]
+      path: 'typeMaintenance',
+      name: 'typeMaintenance',
+      component: () => import('@/views/typeMaintenance/index'),
+      meta: { title: '类型维护', icon: 'table' }
+    },
+    {
+      path: 'merchantMaintenance',
+      name: 'merchantMaintenance',
+      component: () => import('@/views/merchantMaintenance/index'),
+      meta: { title: '商家维护', icon: 'table' }
+    },
+    {
+      path: 'commodityMaintenance',
+      name: 'commodityMaintenance',
+      component: () => import('@/views/commodityMaintenance/index'),
+      meta: { title: '商品维护', icon: 'table' }
+    }
+  ]
   },
   {
     path: '/wholeHouseCustomizationPlanCase',
