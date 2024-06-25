@@ -47,6 +47,13 @@ export const constantRoutes = [
       name: 'designer',
       component: () => import('@/views/designer/index'),
       meta: { title: '设计师服务', icon: 'dashboard' }
+    },
+    {
+      path: 'designerdetail',
+      name: '/designerdetail',
+      component: () => import('@/views/designerdetail/index'),
+      meta: { title: '设计师作品详情', icon: 'dashboard' },
+      hidden: true
     }]
   },
   {

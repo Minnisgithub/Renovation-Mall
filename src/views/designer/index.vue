@@ -19,11 +19,13 @@
         :columns="tableColumns"
         :loading="isLoading"
         :show-pagination="true"
+        :show-detail="true"
         :total="total"
         :pageSize="pageSize"
         :pageNum="pageNum"
         editDialogwidth ="70%"
         labelwidth ="80px"
+        @detail="handleDetail"
         @delete="handleDelete"
         @save="handleSave"
         @size-change="handleSizeChange"
@@ -139,6 +141,9 @@ export default {
           this.$message.error("删除失败，请重试");
         }
       });
+    },
+    handleDetail(row) {
+      this.$router.push({ path: '/designer/designerdetail', query: { row:JSON.stringify(row) }});
     },
     handleSave(formData) {
       if (formData.id) {

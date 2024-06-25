@@ -701,3 +701,34 @@ export function updatedesigner(data) {
         data
     })
 }
+export function adddesignerWork(data) {
+    return request({
+        url: '/designerWork/add',
+        method: 'post',
+        data
+    })
+}
+// // 删除
+export function deletedesignerWork(data) {
+    return request({
+        url: '/designerWork/delete',
+        method: 'post',
+        data
+    })
+}
+// 查询
+export function querydesignerWorkList(params) {
+    return request({
+        url: '/designerWork/queryList',
+        method: 'get',
+        params
+    })
+}
+// 修改
+export function updatedesignerWork(data) {
+    return request({
+        url: '/designerWork/update',
+        method: 'post',
+        data
+    })
+}
