@@ -670,3 +670,34 @@ export function updateHardwareKnowledgePackage(data) {
         data
     })
 }
+export function adddesigner(data) {
+    return request({
+        url: '/designer/add',
+        method: 'post',
+        data
+    })
+}
+// // 删除
+export function deletedesigner(data) {
+    return request({
+        url: '/designer/delete',
+        method: 'post',
+        data
+    })
+}
+// 查询
+export function querydesignerList(params) {
+    return request({
+        url: '/designer/list',
+        method: 'get',
+        params
+    })
+}
+// 修改
+export function updatedesigner(data) {
+    return request({
+        url: '/designer/update',
+        method: 'post',
+        data
+    })
+}
