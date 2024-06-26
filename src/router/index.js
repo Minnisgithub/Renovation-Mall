@@ -68,6 +68,13 @@ export const constantRoutes = [
       meta: { title: '工长模式', icon: 'table' }
     },
     {
+      path: 'territory',
+      name: 'territory',
+      component: () => import('@/views/territory/index'),
+      meta: { title: '区域维护', icon: 'table' }
+    },
+    
+    {
       path: 'foremanwh',
       name: 'foremanwh',
       component: () => import('@/views/foremanwh/index'),

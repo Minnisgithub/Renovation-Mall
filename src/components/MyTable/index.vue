@@ -22,7 +22,7 @@
           <template v-if="column.prop === 'url' ||column.prop === 'imgUrl' ||column.prop === 'userPhoto'">
           <slot name="imageColumn" :row="row"></slot>
           </template>
-          <template v-else-if="column.prop === 'photoList'">
+          <template v-else-if="column.prop === 'photoList'  ">
           <el-button type="text" @click="handleViewPhotos(row)">查看照片集合</el-button>
           </template>
         </template>

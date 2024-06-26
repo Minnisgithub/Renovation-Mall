@@ -647,11 +647,11 @@ export function addHardwareKnowledgePackage(data) {
     })
 }
 // // 删除
-export function deleteHardwareKnowledgePackage(params) {
+export function deleteHardwareKnowledgePackage(data) {
     return request({
         url: '/hardwareKnowledgePackage/deleteHardwareKnowledgePackage',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -728,6 +728,38 @@ export function querydesignerWorkList(params) {
 export function updatedesignerWork(data) {
     return request({
         url: '/designerWork/update',
+        method: 'post',
+        data
+    })
+}
+
+export function addforemanArea(data) {
+    return request({
+        url: '/foremanArea/add',
+        method: 'post',
+        data
+    })
+}
+// // 删除
+export function deleteforemanArea(data) {
+    return request({
+        url: '/foremanArea/delete',
+        method: 'post',
+        data
+    })
+}
+// 查询
+export function queryforemanAreaList(params) {
+    return request({
+        url: '/foremanArea/queryList',
+        method: 'get',
+        params
+    })
+}
+// 修改
+export function updateforemanArea(data) {
+    return request({
+        url: '/foremanArea/update',
         method: 'post',
         data
     })

@@ -5,13 +5,13 @@
         <el-form-item label="工长姓名">
           <el-input v-model="queryCriteria.name"></el-input>
         </el-form-item>
-        <el-form-item label="工长模式">
-          <el-select v-model="queryCriteria.areaId" placeholder="请选择">
+        <el-form-item label="区域">
+          <el-select v-model="queryCriteria.areaName" placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
               :label="item.label"
-              :value="item.value"
+              :value="item.label"
             >
             </el-option>
           </el-select>
@@ -49,7 +49,7 @@
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
 import {
-  foremanInformationqueryList,
+  queryforemanAreaList,
   foremanqueryList,
   addForeman,
   updateForeman,
@@ -71,20 +71,27 @@ export default {
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
+          prop: "description", // 列对应的数据字段
+          label: "描述", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
+        },
+        {
           prop: "seniority", // 列对应的数据字段
           label: "工龄", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "areaId",
-          label: "工长模式",
+          prop: "areaName",
+          label: "区域",
           width: "100",
         },
         {
           prop: "userId",
           label: "用户名",
           width: "100",
+          formatter: this.userIdFormatter, // 使用格式化函数来展示图片
         },
         {
           prop: "imgUrl",
@@ -114,7 +121,7 @@ export default {
         // 并行执行两个异步请求
         const [userListResponse, foremanInfoResponse] = await Promise.all([
           queryUserList({ pageSize: 999, pageNum: 1 }),
-          foremanInformationqueryList({ pageSize: 999, page: 1 }),
+          queryforemanAreaList({ pageSize: 999, page: 1 }),
         ]);
 
         // 处理第一个请求的结果
@@ -125,17 +132,18 @@ export default {
 
         // 处理第二个请求的结果
         this.options = foremanInfoResponse.data.list.map((item) => ({
-          label: item.description,
-          value: item.id, // 假设你需要一个唯一的值作为选项的 value
+          label: item.name,
+          value: item.name, // 假设你需要一个唯一的值作为选项的 value
         }));
 
         // 配置动态表单项
         this.formItems = [
           { label: "姓名", prop: "name", type: "el-input", attrs: {} },
+          { label: "描述", prop: "description", type: "el-input", attrs: {} },
           { label: "工龄", prop: "seniority", type: "el-input", attrs: {} },
           {
-            label: "工长模式",
-            prop: "areaId",
+            label: "区域",
+            prop: "areaName",
             type: "el-select",
             attrs: {
               options: this.options,
@@ -193,8 +201,8 @@ export default {
           }
         });
       } else {
-        // addForeman(formData).then((res) => {
-        addForeman( ).then((res) => {
+        addForeman(formData).then((res) => {
+          // addForeman( ).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();
@@ -221,6 +229,14 @@ export default {
       } else {
         return "无图片";
       }
+    },
+    userIdFormatter(row, column, value) {
+      console.log(value);
+      let data = this.options1.filter((item) => {
+        return item.value == value;
+      });
+      console.log(this.options1,data);
+      return data[0] ? data[0].label : "";
     },
   },
 };
