@@ -2,12 +2,31 @@
   <div>
     <div class="app-container">
       <el-form :model="queryCriteria" inline>
-        <el-form-item label="商家名称">
-          <el-input v-model="queryCriteria.name"></el-input>
-        </el-form-item>
-         <el-form-item label="案例名称">
+        <el-form-item label="案例名称">
           <el-input v-model="queryCriteria.caseName"></el-input>
         </el-form-item>
+        <el-form-item label="商家">
+          <el-select v-model="queryCriteria.businessId" placeholder="请选择">
+            <el-option
+              v-for="item in options1"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <!-- <el-form-item label="类型">
+          <el-select v-model="queryCriteria.typeId" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -29,6 +48,8 @@
         @save="handleSave"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
+        @update-options="handleUpdateOptions"
+        :showgoods-detail="true"
       >
         <template v-slot:imageColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'imgUrl')"></span>
@@ -41,12 +62,12 @@
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
 import {
-  foremanInformationqueryList,
-  foremanqueryList,
-  addForeman,
-  updateForeman,
-  deleteForeman,
-  queryUserList,
+  addWholeHouseCustomizationPlanCase,
+  deleteWholeHouseCustomizationPlanCase,
+  wholeHouseCustomizationPlanCasequeryList,
+  updateWholeHouseCustomizationPlanCase,
+  businessqueryList,
+  goodsqueryList,
 } from "@/api/all";
 export default {
   components: {
@@ -57,27 +78,41 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          prop: "name", // 列对应的数据字段
-          label: "商家名称", // 列的标题
-          width: "150", // 列的宽度
-          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
-        },
-        {
           prop: "caseName", // 列对应的数据字段
           label: "案例名称", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "areaId",
-          label: "工长模式",
-          width: "100",
+          prop: "businessId", // 列对应的数据字段
+          label: "商家名称", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "description",
-          label: "描述",
-          width: "100",
+          prop: "description", // 列对应的数据字段
+          label: "描述", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
+        {
+          prop: "caseDetail.serviceModel", // 列对应的数据字段
+          label: "服务模式", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
+        },
+        {
+          prop: "caseDetail.serviceProcess", // 列对应的数据字段
+          label: "服务工艺", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
+        },
+        // {
+        //   prop: "price",
+        //   label: "价格",
+        //   width: "100",
+        // },
+
         {
           prop: "imgUrl",
           label: "图片",
@@ -90,8 +125,9 @@ export default {
       formItems: [],
       pageSize: 10,
       pageNum: 1,
-      queryCriteria: { name: "" }, // 查询条件
+      queryCriteria: { caseName: "" }, // 查询条件
       options: [],
+      options1: [],
     };
   },
   created() {
@@ -99,47 +135,69 @@ export default {
     this.handleQuery();
   },
   methods: {
+    handleUpdateOptions(options) {
+      // 在这里处理从子组件传递过来的选项数据
+      // 可以更新父组件中的数据或者执行其他逻辑
+      this.$set(this.formItems[4].attrs, "options", options);
+    },
     async initializeData() {
       try {
         this.loading = true;
+
         // 并行执行两个异步请求
-        const [userListResponse, foremanInfoResponse] = await Promise.all([
-          queryUserList({ pageSize: 999, pageNum: 1 }),
-          foremanInformationqueryList({ pageSize: 999, page: 1 }),
+        const [businessList, goodsList] = await Promise.all([
+          businessqueryList({ pageSize: 999, page: 1 }),
+          goodsqueryList({ pageSize: 999, page: 1 }),
         ]);
+
         // 处理第一个请求的结果
-        this.options1 = userListResponse.data.list.map((item) => ({
-          label: item.userName,
-          value: item.userId, // 假设你需要一个唯一的值作为选项的 value
+        this.options1 = businessList.data.list.map((item) => ({
+          label: item.name,
+          value: item.id, // 假设你需要一个唯一的值作为选项的 value
         }));
 
         // 处理第二个请求的结果
-        this.options = foremanInfoResponse.data.list.map((item) => ({
-          label: item.description,
+        this.options = goodsList.data.list.map((item) => ({
+          label: item.name,
           value: item.id, // 假设你需要一个唯一的值作为选项的 value
         }));
 
         // 配置动态表单项
         this.formItems = [
-          { label: "姓名", prop: "name", type: "el-input", attrs: {} },
           { label: "案例名称", prop: "caseName", type: "el-input", attrs: {} },
           {
-            label: "工长模式",
-            prop: "areaId",
-            type: "el-select",
-            attrs: {
-              options: this.options,
-            },
-          },
-          {
-            label: "描述",
-            prop: "description",
+            label: "商家名称",
+            prop: "businessId",
             type: "el-select",
             attrs: {
               options: this.options1,
             },
           },
-          { label: "图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+          {
+            label: "商品",
+            prop: "goodsList",
+            type: "el-select-remote",
+            attrs: {
+              options: this.options,
+            },
+          },
+          { label: "描述", prop: "description", type: "el-input", attrs: {} },
+          {
+            label: "服务模式",
+            prop: "serviceModel",
+            type: "el-input",
+            attrs: {},
+          },
+          {
+            label: "服务工艺",
+            prop: "serviceProcess",
+            type: "el-input",
+            attrs: {},
+          },
+          { label: "图片1", prop: "imgUrl", type: "el-upload", attrs: {} },
+          { label: "图片2", prop: "imgUrl2", type: "el-upload", attrs: {} },
+          { label: "图片3", prop: "imgUrl3", type: "el-upload", attrs: {} },
+          { label: "图片4", prop: "imgUrl4", type: "el-upload", attrs: {} },
         ];
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -149,12 +207,21 @@ export default {
       }
     },
     handleQuery() {
-      foremanqueryList({
+      wholeHouseCustomizationPlanCasequeryList({
         ...this.queryCriteria,
         pageSize: this.pageSize,
         page: this.pageNum,
       }).then((res) => {
-        this.tableData = res.data.list;
+        this.tableData = res.data.list.map((item) => {
+          item.serviceModel = item.caseDetail?.serviceModel;
+          item.serviceProcess = item.caseDetail?.serviceProcess;
+          item.showgoodsList = JSON.parse(JSON.stringify(item.goodsList))
+          item.goodsList = item.goodsList.map((v) => {
+            return Number(v.goodsId);
+          });
+          return item;
+        });
+        console.log(this.tableData);
         this.pageSize = res.data.pageSize;
         this.pageNum = res.data.pageNum;
         this.total = res.data.total;
@@ -163,7 +230,7 @@ export default {
     },
     handleDelete(row) {
       // Handle delete logic here
-      deleteForeman([row.id]).then((res) => {
+      deleteWholeHouseCustomizationPlanCase([row.id]).then((res) => {
         if (res.status === 0) {
           // 删除成功后的处理
           this.$message.success("删除成功");
@@ -176,15 +243,34 @@ export default {
     },
     handleSave(formData) {
       if (formData.id) {
-        updateForeman(formData).then((res) => {
+        let goodsList = formData.goodsList.map((item) => {
+          return { goodsId: item };
+        });
+        updateWholeHouseCustomizationPlanCase({
+          ...formData,
+          goodsList,
+          caseDetail: {
+            serviceModel: formData.serviceModel,
+            serviceProcess: formData.serviceProcess,
+          },
+        }).then((res) => {
           if (res.status == 0) {
             this.$message.success("修改成功");
             this.handleQuery();
           }
         });
       } else {
-        // addForeman(formData).then((res) => {
-        addForeman( ).then((res) => {
+        let goodsList = formData.goodsList.map((item) => {
+          return { goodsId: item };
+        });
+        addWholeHouseCustomizationPlanCase({
+          ...formData,
+          goodsList,
+          caseDetail: {
+            serviceModel: formData.serviceModel,
+            serviceProcess: formData.serviceProcess,
+          },
+        }).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();
@@ -202,7 +288,7 @@ export default {
     },
 
     handleReset() {
-      this.queryCriteria = { name: "" };
+      this.queryCriteria = { caseName: "" };
       this.handleQuery();
     },
     imageUrlFormatter(row, property) {

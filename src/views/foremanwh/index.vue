@@ -231,12 +231,12 @@ export default {
       }
     },
     userIdFormatter(row, column, value) {
-      console.log(value);
-      let data = this.options1.filter((item) => {
+      let data = this.options1?.filter((item) => {
         return item.value == value;
       });
-      console.log(this.options1,data);
-      return data[0] ? data[0].label : "";
+      if (data) {
+        return data[0] ? data[0].label : "";
+      }
     },
   },
 };

@@ -2,12 +2,24 @@
   <div>
     <div class="app-container">
       <el-form :model="queryCriteria" inline>
-         <el-form-item label="设计师姓名">
-          <el-input v-model="queryCriteria.name"></el-input>
+        <el-form-item label="设计师姓名">
+          <el-input v-model="queryCriteria.designerName"></el-input>
         </el-form-item>
         <el-form-item label="工长姓名">
-          <el-input v-model="queryCriteria.name"></el-input>
+          <el-input v-model="queryCriteria.foremanName"></el-input>
         </el-form-item>
+        <!-- <el-form-item label="时间:">
+              <el-date-picker
+                style="width: 360px"
+                v-model="queryCriteria.time"
+                type="datetimerange"
+                range-separator="至"  
+                start-placeholder="开始时间"
+                end-placeholder="截止时间"
+                value-format="yyyy-MM-dd HH:mm:ss "
+              >
+              </el-date-picker>
+            </el-form-item> -->
         <!-- <el-form-item label="工长模式">
           <el-select v-model="queryCriteria.areaId" placeholder="请选择">
             <el-option
@@ -40,6 +52,8 @@
         @save="handleSave"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
+        :show-detail="true"
+         @detail="handleDetail"
       >
         <template v-slot:imageColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'imgUrl')"></span>
@@ -52,12 +66,14 @@
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
 import {
-  foremanInformationqueryList,
   foremanqueryList,
-  addForeman,
-  updateForeman,
-  deleteForeman,
   queryUserList,
+  querydesignerList,
+  contractqueryList,
+  contractAddContract,
+  contractupdateContract,
+  contractdeleteContract,
+  contractStagequeryList
 } from "@/api/all";
 export default {
   components: {
@@ -68,40 +84,46 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          prop: "name", // 列对应的数据字段
-          label: "姓名", // 列的标题
+          prop: "designerName", // 列对应的数据字段
+          label: "设计师名称", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "seniority", // 列对应的数据字段
-          label: "工龄", // 列的标题
+          prop: "foremanName", // 列对应的数据字段
+          label: "工长", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
+        },
+         {
+          prop: "address", // 列对应的数据字段
+          label: "地址", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "areaId",
-          label: "工长模式",
-          width: "100",
+          prop: "stageName",
+          label: "阶段",
+          width: "150",
         },
         {
-          prop: "userId",
-          label: "用户名",
+          prop: "createTime",
+          label: "创建时间",
           width: "100",
         },
-        {
-          prop: "imgUrl",
-          label: "图片",
-          width: "200",
-          // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
-        },
+        // {
+        //   prop: "imgUrl",
+        //   label: "图片",
+        //   width: "200",
+        //   // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
+        // },
       ],
       isLoading: false,
       total: 10,
       formItems: [],
       pageSize: 10,
       pageNum: 1,
-      queryCriteria: { name: "" }, // 查询条件
+      queryCriteria: { designerName: "", foremanName: "",}, // 查询条件
       options: [],
     };
   },
@@ -113,46 +135,67 @@ export default {
     async initializeData() {
       try {
         this.loading = true;
-
         // 并行执行两个异步请求
-        const [userListResponse, foremanInfoResponse] = await Promise.all([
+        const [userListResponse, foremanInfoResponse,designerResponse,contractStageResponse] = await Promise.all([
           queryUserList({ pageSize: 999, pageNum: 1 }),
-          foremanInformationqueryList({ pageSize: 999, page: 1 }),
+          foremanqueryList({ pageSize: 999, page: 1 }),
+          querydesignerList({ pageSize: 999, page: 1 }),
+          contractStagequeryList({ pageSize: 999, page: 1 })
         ]);
-
-        // 处理第一个请求的结果
         this.options1 = userListResponse.data.list.map((item) => ({
           label: item.userName,
           value: item.userId, // 假设你需要一个唯一的值作为选项的 value
         }));
-
-        // 处理第二个请求的结果
         this.options = foremanInfoResponse.data.list.map((item) => ({
-          label: item.description,
+          label: item.name,
           value: item.id, // 假设你需要一个唯一的值作为选项的 value
         }));
-
+        this.options2 = designerResponse.data.list.map((item) => ({
+          label: item.name,
+          value: item.id, // 假设你需要一个唯一的值作为选项的 value
+        }));
+         this.options3 = contractStageResponse.data.map((item) => ({
+          label: item.name,
+          value: item.id, // 假设你需要一个唯一的值作为选项的 value
+        }));
+        
         // 配置动态表单项
         this.formItems = [
-          { label: "姓名", prop: "name", type: "el-input", attrs: {} },
-          { label: "工龄", prop: "seniority", type: "el-input", attrs: {} },
           {
-            label: "工长模式",
-            prop: "areaId",
+            label: "设计师",
+            prop: "designerId",
+            type: "el-select",
+            attrs: {
+              options: this.options2,
+            },span:12 
+            
+          },
+          {
+            label: "工长",
+            prop: "foremanId",
             type: "el-select",
             attrs: {
               options: this.options,
-            },
+            },span:12 
           },
-          {
+            {
             label: "用户",
             prop: "userId",
             type: "el-select",
             attrs: {
               options: this.options1,
-            },
+            },span:12 
           },
-          { label: "图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+          {
+            label: "当前进度",
+            prop: "stageId",
+            type: "el-select",
+            attrs: {
+              options: this.options3,
+            },span:12 
+          },
+          { label: "工地地址", prop: "address", type: "el-input", attrs: {} },
+          { label: "图片", prop: "photoList", type: "el-upload-list", attrs: {} },
         ];
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -162,7 +205,7 @@ export default {
       }
     },
     handleQuery() {
-      foremanqueryList({
+      contractqueryList({
         ...this.queryCriteria,
         pageSize: this.pageSize,
         page: this.pageNum,
@@ -176,7 +219,7 @@ export default {
     },
     handleDelete(row) {
       // Handle delete logic here
-      deleteForeman([row.id]).then((res) => {
+      contractdeleteContract([row.id]).then((res) => {
         if (res.status === 0) {
           // 删除成功后的处理
           this.$message.success("删除成功");
@@ -189,15 +232,14 @@ export default {
     },
     handleSave(formData) {
       if (formData.id) {
-        updateForeman(formData).then((res) => {
+        contractupdateContract(formData).then((res) => {
           if (res.status == 0) {
             this.$message.success("修改成功");
             this.handleQuery();
           }
         });
       } else {
-        // addForeman(formData).then((res) => {
-        addForeman( ).then((res) => {
+        contractAddContract(formData).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();
@@ -215,7 +257,7 @@ export default {
     },
 
     handleReset() {
-      this.queryCriteria = { name: "" };
+      this.queryCriteria = { designerName: "", foremanName: "",};
       this.handleQuery();
     },
     imageUrlFormatter(row, property) {
@@ -224,6 +266,9 @@ export default {
       } else {
         return "无图片";
       }
+    },
+    handleDetail(row) {
+      this.$router.push({ path: '/constructionSites/constructionSitesdetail', query: { row:JSON.stringify(row) }});
     },
   },
 };

@@ -27,7 +27,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
-        <template v-slot:imageColumn="{ row }">
+        <template  v-slot:URLColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'url')"></span>
         </template>
       </MyTable>

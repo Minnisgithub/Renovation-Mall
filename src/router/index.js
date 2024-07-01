@@ -36,7 +36,7 @@ export const constantRoutes = [
       path: 'index',
       name: 'constructionKnowledge',
       component: () => import('@/views/constructionKnowledge/index'),
-      meta: { title: '施工知识库', icon: 'dashboard' }
+      meta: { title: '装修小百科', icon: 'dashboard' }
     }]
   },
   {
@@ -110,7 +110,7 @@ export const constantRoutes = [
       path: 'index',
       name: 'hardwareKnowledgePackage',
       component: () => import('@/views/hardwareKnowledgePackage/index'),
-      meta: { title: '硬装知识包', icon: 'dashboard' }
+      meta: { title: '付费咨询', icon: 'dashboard' }
     }]
   },
   {
@@ -121,7 +121,15 @@ export const constantRoutes = [
       name: 'constructionSites',
       component: () => import('@/views/constructionSites/index'),
       meta: { title: '工地一览', icon: 'dashboard' }
-    }]
+    },
+    {
+      path: 'constructionSitesdetail',
+      name: '/constructionSitesdetail',
+      component: () => import('@/views/constructionSitesdetail/index'),
+      meta: { title: '工地一览详情', icon: 'dashboard' },
+      hidden: true
+    }
+  ]
   },
   // {
   //   path: '/partner',

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="app-container">
+    <!-- <div class="app-container">
       <el-form :model="queryCriteria" inline>
         <el-form-item label="名称">
           <el-input v-model="queryCriteria.name"></el-input>
@@ -10,7 +10,7 @@
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
-    </div>
+    </div> -->
     <div class="app-container">
       <!-- 查询条件及重置按钮 -->
       <MyTable
@@ -29,6 +29,9 @@
       >
        <template v-slot:imageColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'imgUrl')"></span>
+        </template>
+         <template v-slot:URLColumn="{ row }">
+          <span v-html="imageUrlFormatter(row, 'url')"></span>
         </template>
       </MyTable>
     </div>
@@ -52,27 +55,26 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          prop: "name", // 列对应的数据字段
-          label: "商家名称", // 列的标题
+          prop: "team", // 列对应的数据字段
+          label: "团队介绍", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
         {
-          prop: "phone", // 列对应的数据字段
-          label: "手机号码", // 列的标题
+          prop: "serviceArea", // 列对应的数据字段
+          label: "服务范围", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
-        {
+         {
           prop: "imgUrl",
-          label: "链接",
+          label: "展示图片",
           width: "200",
-          // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
         },
         {
-          prop: "createTime",
-          label: "创建时间",
-          width: "100",
+          prop: "url",
+          label: "二维码",
+          width: "200",
         },
       ],
       isLoading: false,
@@ -87,9 +89,10 @@ export default {
     this.handleQuery();
     this.formItems = [
       // 动态表单项配置
-      { label: "商家名称", prop: "name", type: "el-input", attrs: {} },
-      { label: "手机号码", prop: "phone", type: "el-input", attrs: {} },
-      { label: "图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+      { label: "团队介绍", prop: "team", type: "el-input", attrs: {} },
+      { label: "服务范围", prop: "serviceArea", type: "el-input", attrs: {} },
+      { label: "展示图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+      { label: "二维码", prop: "url", type: "el-upload", attrs: {} },
     ];
   },
   methods: {
@@ -151,7 +154,9 @@ export default {
       this.handleQuery();
     },
     imageUrlFormatter(row, property) {
+      console.log(row,property);
       if (row[property]) {
+        console.log(row[property]);
         return `<img src="${row[property]}" style="max-height:60px;" />`;
       } else {
         return "无图片";

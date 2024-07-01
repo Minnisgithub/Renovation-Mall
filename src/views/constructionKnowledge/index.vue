@@ -41,7 +41,7 @@
         @delete="handleDelete"
         @save="handleSave"
       >
-        <template v-slot:imageColumn="{ row }">
+        <template  v-slot:URLColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'url')"></span>
         </template>
       </MyTable>

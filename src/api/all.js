@@ -8,11 +8,11 @@ export function addSupervisor(data) {
     })
 }
 // 删除
-export function deleteSupervisor(params) {
+export function deleteSupervisor(data) {
     return request({
         url: '/supervisor/deleteSupervisor',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -40,11 +40,11 @@ export function addWholeHouseCustomizationPlanCase(data) {
     })
 }
 // 删除
-export function deleteWholeHouseCustomizationPlanCase(params) {
+export function deleteWholeHouseCustomizationPlanCase(data) {
     return request({
-        url: '//wholeHouseCustomizationPlanCase/deleteWholeHouseCustomizationPlanCase',
-        method: 'delete',
-        params
+        url: '/wholeHouseCustomizationPlanCase/deleteWholeHouseCustomizationPlanCase',
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -72,11 +72,11 @@ export function addContractSummary(data) {
     })
 }
 // 删除
-export function deleteContractSummary(params) {
+export function deleteContractSummary(data) {
     return request({
         url: '/contractSummary/deleteContractSummary',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -136,11 +136,11 @@ export function contractAddContract(data) {
     })
 }
 // 删除
-export function contractdeleteContract(params) {
+export function contractdeleteContract(data) {
     return request({
         url: '/contract/deleteContract',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 工长端功能 查询 我的工地 -在建工地
@@ -192,11 +192,11 @@ export function goodsadd(data) {
     })
 }
 // 删除
-export function goodsdelete(params) {
+export function goodsdelete(data) {
     return request({
         url: '/goods/delete',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -224,11 +224,11 @@ export function goodsTypeadd(data) {
     })
 }
 // 删除
-export function goodsTypedelete(params) {
+export function goodsTypedelete(data) {
     return request({
         url: '/goodsType/delete',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -256,11 +256,11 @@ export function businessadd(data) {
     })
 }
 // 删除
-export function businessdelete(params) {
+export function businessdelete(data) {
     return request({
         url: '/business/delete',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -464,11 +464,11 @@ export function cleanadd(data) {
     })
 }
 // 删除
-export function cleandelete(params) {
+export function cleandelete(data) {
     return request({
         url: '/clean/delete',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -496,11 +496,11 @@ export function homeTechnologyadd(data) {
     })
 }
 // 删除
-export function homeTechnologydelete(params) {
+export function homeTechnologydelete(data) {
     return request({
         url: '/homeTechnology/delete',
-        method: 'delete',
-        params
+        method: 'post',
+        data
     })
 }
 // 查询
@@ -760,6 +760,22 @@ export function queryforemanAreaList(params) {
 export function updateforemanArea(data) {
     return request({
         url: '/foremanArea/update',
+        method: 'post',
+        data
+    })
+}
+// 客服
+// 查询
+export function customerquery() {
+    return request({
+        url: '/customer/query',
+        method: 'get',
+    })
+}
+// 修改
+export function customerupdate(data) {
+    return request({
+        url: '/customer/update',
         method: 'post',
         data
     })

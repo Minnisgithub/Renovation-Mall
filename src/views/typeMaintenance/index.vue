@@ -71,7 +71,7 @@ export default {
     },
     handleDelete(row) {
       // Handle delete logic here
-      goodsTypedelete({id:row.id})
+      goodsTypedelete([row.id])
         .then((res) => {
           if (res.status === 0) {
             // 删除成功后的处理

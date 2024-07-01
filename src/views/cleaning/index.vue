@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="app-container">
+    <!-- <div class="app-container">
       <el-form :model="queryCriteria" inline>
         <el-form-item label="名称">
           <el-input v-model="queryCriteria.name"></el-input>
@@ -10,7 +10,7 @@
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
-    </div>
+    </div> -->
     <div class="app-container">
       <!-- 查询条件及重置按钮 -->
       <MyTable
@@ -30,6 +30,9 @@
        <template v-slot:imageColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'imgUrl')"></span>
         </template>
+         <template v-slot:URLColumn="{ row }">
+          <span v-html="imageUrlFormatter(row, 'url')"></span>
+        </template>
       </MyTable>
     </div>
   </div>
@@ -38,7 +41,7 @@
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
 import {
-  supervisorqueryList,
+  cleanqueryList,
   cleanadd,
   cleanupdate,
   cleandelete,
@@ -77,9 +80,14 @@ export default {
         },
         {
           prop: "imgUrl",
-          label: "链接",
+          label: "展示图片",
           width: "200",
           // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
+        },
+         {
+          prop: "url",
+          label: "二维码",
+          width: "200",
         },
       ],
       isLoading: false,
@@ -98,12 +106,14 @@ export default {
       { label: "内容", prop: "content", type: "el-input", attrs: {} },
       { label: "价格", prop: "price", type: "el-input", attrs: {} },
       { label: "预约方式", prop: "appointmentBooking", type: "el-input", attrs: {} },
-      { label: "图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+      { label: "展示图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+        { label: "二维码", prop: "url", type: "el-upload", attrs: {} },
+
     ];
   },
   methods: {
     handleQuery() {
-      supervisorqueryList({
+      cleanqueryList({
         ...this.queryCriteria,
         pageSize: this.pageSize,
         page: this.pageNum,

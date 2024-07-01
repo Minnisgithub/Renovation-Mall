@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="app-container">
+    <!-- <div class="app-container">
       <el-form :model="queryCriteria" inline>
         <el-form-item label="名称">
           <el-input v-model="queryCriteria.name"></el-input>
@@ -10,7 +10,7 @@
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
-    </div>
+    </div> -->
     <div class="app-container">
       <!-- 查询条件及重置按钮 -->
       <MyTable
@@ -29,6 +29,9 @@
       >
        <template v-slot:imageColumn="{ row }">
           <span v-html="imageUrlFormatter(row, 'imgUrl')"></span>
+        </template>
+         <template v-slot:URLColumn="{ row }">
+          <span v-html="imageUrlFormatter(row, 'url')"></span>
         </template>
       </MyTable>
     </div>
@@ -70,6 +73,12 @@ export default {
           width: "200",
           // formatter: this.imageUrlFormatter, // 使用格式化函数来展示图片
         },
+        {
+          prop: "url",
+          label: "二维码",
+          width: "200",
+        },
+        
       ],
       isLoading: false,
       total: 10,
@@ -85,7 +94,8 @@ export default {
       // 动态表单项配置
       { label: "描述", prop: "description", type: "el-input", attrs: {} },
       { label: "名称", prop: "name", type: "el-input", attrs: {} },
-      { label: "图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+      { label: "展示图片", prop: "imgUrl", type: "el-upload", attrs: {} },
+        { label: "二维码", prop: "url", type: "el-upload", attrs: {} },
     ];
   },
   methods: {
@@ -125,7 +135,7 @@ export default {
           }
         });
       } else {
-        homeTechnologyadd({...formData, deleteFlag: 0,}).then((res) => {
+        homeTechnologyadd(formData).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();

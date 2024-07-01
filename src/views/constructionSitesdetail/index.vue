@@ -4,42 +4,40 @@
       <el-button type="primary" @click="goBack">返回上一页</el-button>
     </div>
     <div class="app-container">
-      <el-descriptions title="设计师信息">
-        <el-descriptions-item label="姓名">{{
-          detailList.name
+      <el-form :model="queryCriteria" inline>
+        <el-form-item label="阶段查询">
+          <el-select
+            @change="handleSelectChange"
+            v-model="queryCriteria.stageId"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in options3"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="app-container">
+      <el-descriptions title="工地详细信息">
+        <el-descriptions-item label="设计师">{{
+          detailList.designerName
         }}</el-descriptions-item>
-         <el-descriptions-item label="手机号码">{{
-          detailList.phone
+        <el-descriptions-item label="工长">{{
+          detailList.foremanName
         }}</el-descriptions-item>
-         <el-descriptions-item label="毕业院校">{{
-          detailList.graduatedFrom
+        <!-- <el-descriptions-item label="阶段">{{
+          detailList.stageName
+        }}</el-descriptions-item> -->
+        <el-descriptions-item label="地址">{{
+          detailList.address
         }}</el-descriptions-item>
-         <el-descriptions-item label="工龄">{{
-          detailList.seniority
-        }}</el-descriptions-item>
-          <el-descriptions-item label="工作地">{{
-          detailList.workPlace
-        }}</el-descriptions-item>
-          <el-descriptions-item label="擅长风格">{{
-          detailList.deleteStyle
-        }}</el-descriptions-item>
-          <el-descriptions-item label="设计理念">{{
-          detailList.designConcept
-        }}</el-descriptions-item>
-         <el-descriptions-item label="设计师头衔">{{
-          detailList.title
-        }}</el-descriptions-item>
-          <el-descriptions-item label="收费标准">{{
-          detailList.chargingStandard
-        }}</el-descriptions-item>
-          <el-descriptions-item label="荣誉信息">{{
-          detailList.honor
-        }}</el-descriptions-item>
-          <el-descriptions-item label="服务范围">{{
-          detailList.serviceRange
-        }}</el-descriptions-item>
-         <el-descriptions-item label="服务标准">{{
-          detailList.serviceStandards
+        <el-descriptions-item label="创建时间">{{
+          detailList.createTime
         }}</el-descriptions-item>
       </el-descriptions>
     </div>
@@ -70,10 +68,11 @@
 <script>
 import MyTable from "@/components/MyTable"; // 请确保路径正确
 import {
-  querydesignerWorkList,
-  adddesignerWork,
-  updatedesignerWork,
-  deletedesignerWork,
+  queryListByContractId,
+  addContractSummary,
+  updateContractSummary,
+  deleteContractSummary,
+  contractStagequeryList,
 } from "@/api/all";
 export default {
   components: {
@@ -84,8 +83,20 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          prop: "description", // 列对应的数据字段
-          label: "作品描述", // 列的标题
+          prop: "preparation", // 列对应的数据字段
+          label: "准备工作", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
+        },
+        {
+          prop: "coordinateWork", // 列对应的数据字段
+          label: "配合工作", // 列的标题
+          width: "150", // 列的宽度
+          // 其他属性如对齐方式、自定义渲染函数等根据需要添加
+        },
+        {
+          prop: "summary", // 列对应的数据字段
+          label: "总结内容", // 列的标题
           width: "150", // 列的宽度
           // 其他属性如对齐方式、自定义渲染函数等根据需要添加
         },
@@ -102,25 +113,49 @@ export default {
       pageSize: 10,
       pageNum: 1,
       detailList: [],
+      queryCriteria: {},
+      options3: [],
     };
   },
-  created() {
+  async created() {
     console.log(this.$route.query);
-    this.detailList = JSON.parse(this.$route.query.row  );
-    this.handleQuery();
+    this.detailList = JSON.parse(this.$route.query.row);
     this.formItems = [
       // 动态表单项配置
-      { label: "作品描述", prop: "description", type: "el-input", attrs: {} },
+      { label: "准备工作", prop: "preparation", type: "el-input", attrs: {} },
+      {
+        label: "配合工作",
+        prop: "coordinateWork",
+        type: "el-input",
+        attrs: {},
+      },
+      { label: "总结内容", prop: "summary", type: "el-input", attrs: {} },
       { label: "图片", prop: "photoList", type: "el-upload-list", attrs: {} },
     ];
+    const StagequeryListdata = await contractStagequeryList({
+      pageSize: 999,
+      page: 1,
+    });
+    this.options3 = StagequeryListdata.data.map((item) => ({
+      label: item.name,
+      value: item.id, // 假设你需要一个唯一的值作为选项的 value
+    }));
+    this.queryCriteria = {
+      stageId: this.detailList.stageId,
+    };
+    this.handleQuery();
   },
   methods: {
     goBack() {
       this.$router.go(-1); // Vue Router 提供的后退方法
     },
+    handleSelectChange() {
+      this.handleQuery();
+    },
     handleQuery() {
-      querydesignerWorkList({
-        designerId:this.detailList.id,
+      queryListByContractId({
+        stageId: this.queryCriteria.stageId,
+        contractId: this.detailList.id,
         pageSize: this.pageSize,
         page: this.pageNum,
       }).then((res) => {
@@ -134,7 +169,7 @@ export default {
     handleDelete(row) {
       console.log(row.id);
       // Handle delete logic here
-      deletedesignerWork([row.id]).then((res) => {
+      deleteContractSummary([row.id]).then((res) => {
         if (res.status === 0) {
           // 删除成功后的处理
           this.$message.success("删除成功");
@@ -147,14 +182,18 @@ export default {
     },
     handleSave(formData) {
       if (formData.id) {
-        updatedesignerWork(formData).then((res) => {
+        updateContractSummary(formData).then((res) => {
           if (res.status == 0) {
             this.$message.success("修改成功");
             this.handleQuery();
           }
         });
       } else {
-        adddesignerWork({...formData, designerId:this.detailList.id,}).then((res) => {
+        addContractSummary({
+          ...formData,
+          contractId: this.detailList.id,
+          stageId: this.detailList.stageId,
+        }).then((res) => {
           if (res.status == 0) {
             this.$message.success("新增成功");
             this.handleQuery();
@@ -172,7 +211,7 @@ export default {
     },
 
     handleReset() {
-      this.queryCriteria = { name: "" };
+      this.queryCriteria = {};
       this.handleQuery();
     },
     imageUrlFormatter(row, property) {

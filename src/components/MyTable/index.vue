@@ -18,12 +18,27 @@
         :prop="column.prop"
         :formatter="column.formatter"
       >
-        <template v-if="column.prop === 'url' || column.prop === 'imgUrl' || column.prop === 'userPhoto' || column.prop === 'photoList'" v-slot="{ row }">
-          <template v-if="column.prop === 'url' ||column.prop === 'imgUrl' ||column.prop === 'userPhoto'">
-          <slot name="imageColumn" :row="row"></slot>
+        <template
+          v-if="
+            column.prop === 'url' ||
+            column.prop === 'imgUrl' ||
+            column.prop === 'userPhoto' ||
+            column.prop === 'photoList'
+          "
+          v-slot="{ row }"
+        >
+          <template
+            v-if="column.prop === 'imgUrl' || column.prop === 'userPhoto'"
+          >
+            <slot name="imageColumn" :row="row"></slot>
           </template>
-          <template v-else-if="column.prop === 'photoList'  ">
-          <el-button type="text" @click="handleViewPhotos(row)">查看照片集合</el-button>
+          <template v-if="column.prop === 'url'">
+            <slot name="URLColumn" :row="row"></slot>
+          </template>
+          <template v-else-if="column.prop === 'photoList'">
+            <el-button type="text" @click="handleViewPhotos(row)"
+              >查看照片集合</el-button
+            >
           </template>
         </template>
       </el-table-column>
@@ -36,12 +51,16 @@
             >查看详情</el-button
           >
           <el-divider v-if="showDetail" direction="vertical"></el-divider>
+          <el-button
+            v-if="showgoodsDetail"
+            type="text"
+            @click="handleshowgoodsDetail(scope.row)"
+            >查看详情</el-button
+          >
+          <el-divider v-if="showgoodsDetail" direction="vertical"></el-divider>
           <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-popconfirm
-            title="确定删除？"
-            @confirm="handleDelete(scope.row)"
-          >
+          <el-popconfirm title="确定删除？" @confirm="handleDelete(scope.row)">
             <el-button slot="reference" type="text" size="small"
               >删除</el-button
             >
@@ -90,6 +109,24 @@
                     v-model="formData[item.prop]"
                     :id="`form-item-${index}`"
                     v-bind="item.attrs"
+                  >
+                    <el-option
+                      v-for="option in item.attrs.options"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
+                    ></el-option>
+                  </el-select>
+                </template>
+                <template v-else-if="item.type === 'el-select-remote'">
+                  <el-select
+                    v-model="formData[item.prop]"
+                    :id="`form-item-${index}`"
+                    v-bind="item.attrs"
+                    multiple
+                    filterable
+                    remote
+                    :remote-method="remoteMethod"
                   >
                     <el-option
                       v-for="option in item.attrs.options"
@@ -196,11 +233,31 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog
+      title="商品"
+      :visible.sync="goodsListVisible"
+      width="60%"
+      height="500"
+    >
+      <el-table
+        :data="currentgoods"
+        style="max-height: 600px; overflow-y: auto; width: 100%"
+      >
+        <el-table-column prop="name" label="商品名" width="180">
+        </el-table-column>
+        <el-table-column prop="address" label="图片">
+          <template slot-scope="scope">
+            <img :src="scope.row.imgUrl" style="width: 200px; height: auto" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getToken } from "@/utils/auth";
+import { goodsqueryList } from "@/api/all";
 var token = getToken();
 
 export default {
@@ -227,6 +284,10 @@ export default {
       default: true,
     },
     showDetail: {
+      type: Boolean,
+      default: false,
+    },
+    showgoodsDetail: {
       type: Boolean,
       default: false,
     },
@@ -259,7 +320,9 @@ export default {
       formData: {}, // Store form data for editing
       headers: { token: token },
       PhotosdialogVisible: false,
+      goodsListVisible: false,
       currentPhotos: [],
+      currentgoods: [],
     };
   },
   methods: {
@@ -269,6 +332,13 @@ export default {
     },
     handleDetail(row) {
       this.$emit("detail", row);
+    },
+    handleshowgoodsDetail(row) {
+      console.log(row);
+      this.currentgoods = row.showgoodsList.map((item) => {
+        return item.goods;
+      }); // 假设 row.photoList 是一个包含照片信息的数组
+      this.goodsListVisible = true; // 打开 el-dialog
     },
     handleDelete(row) {
       console.log(222);
@@ -322,6 +392,27 @@ export default {
       console.log(row);
       this.currentPhotos = row.photoList; // 假设 row.photoList 是一个包含照片信息的数组
       this.PhotosdialogVisible = true; // 打开 el-dialog
+    },
+    async remoteMethod(query) {
+      // 远程搜索方法的实现
+      // 例如，使用 axios 进行后端 API 请求
+      try {
+        const response = await goodsqueryList({
+          pageSize: 999,
+          page: 1,
+          name: query,
+        });
+        console.log(response);
+        const options = response.data.list.map((result) => ({
+          value: result.id,
+          label: result.name,
+        }));
+        this.$emit("update-options", options);
+        return options;
+      } catch (error) {
+        console.error("Remote search failed:", error);
+        return [];
+      }
     },
   },
 };
